@@ -11,7 +11,7 @@ const Home = () => {
       <Container maxW="container.xl">
         <VStack spacing={8} textAlign="center" mb={16}>
           <Heading as="h1" size="2xl">
-            ברוכים הבאים למימור
+            ברוכים הבאים למימורה
           </Heading>
           <Text fontSize="xl" maxW="2xl">
             פלטפורמה חדשנית לשיתוף ציר זמן לימודי בין מורים. צרו, שתפו ולמדו מניסיונם של אחרים.

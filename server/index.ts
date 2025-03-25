@@ -12,7 +12,7 @@ app.use(cors());
 
 // Routes
 app.get('/api/timelines', async (req, res) => {
-  console.log('GET /api/timelines');
+  console.log('GET /api/timelines - Request received');
   try {
     const timelines = await prisma.timeline.findMany({
       include: {
@@ -20,6 +20,7 @@ app.get('/api/timelines', async (req, res) => {
         followers: true
       }
     });
+    console.log('GET /api/timelines - Success:', timelines.length, 'timelines found');
     res.json(timelines);
   } catch (error) {
     console.error('Error fetching timelines:', error);
@@ -28,11 +29,12 @@ app.get('/api/timelines', async (req, res) => {
 });
 
 app.post('/api/timelines', async (req, res) => {
-  console.log('POST /api/timelines', req.body);
+  console.log('POST /api/timelines - Request received:', req.body);
   
   // בדיקת תקינות הנתונים
   const { title, gradeLevel, subject } = req.body;
   if (!title || !gradeLevel || !subject) {
+    console.log('POST /api/timelines - Validation failed:', { title, gradeLevel, subject });
     return res.status(400).json({ 
       error: 'חסרים פרטים נדרשים',
       details: {
@@ -54,7 +56,7 @@ app.post('/api/timelines', async (req, res) => {
       }
     });
     
-    console.log('Timeline created:', timeline);
+    console.log('POST /api/timelines - Success:', timeline);
     res.json(timeline);
   } catch (error) {
     console.error('Timeline creation error:', error);
@@ -115,4 +117,5 @@ app.post('/api/timelines/:timelineId/items', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
   console.log(`API available at http://localhost:${port}/api`);
+  console.log('Waiting for requests...');
 }); 
