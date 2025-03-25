@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  image     String?
+  sector    String?
+  timelines Timeline[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Timeline {
+  id          String   @id @default(cuid())
+  title       String
+  gradeLevel  String
+  subject     String
+  structure   Json
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  items       TeachingItem[]
+  followers   TimelineFollow[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TeachingItem {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  fileUrl     String?
+  tags        String[]
+  status      String   @default("draft") // draft or published
+  timelineId  String
+  timeline    Timeline @relation(fields: [timelineId], references: [id])
+  comments    Comment[]
+  ratings     Rating[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TimelineFollow {
+  id          String   @id @default(cuid())
+  timelineId  String
+  timeline    Timeline @relation(fields: [timelineId], references: [id])
+  followerId  String
+  createdAt   DateTime @default(now())
+}
+
+model Comment {
+  id          String   @id @default(cuid())
+  content     String
+  itemId      String
+  item        TeachingItem @relation(fields: [itemId], references: [id])
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Rating {
+  id          String   @id @default(cuid())
+  rating      Int
+  itemId      String
+  item        TeachingItem @relation(fields: [itemId], references: [id])
+  userId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+} 
