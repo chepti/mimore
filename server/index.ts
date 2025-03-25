@@ -29,15 +29,27 @@ app.get('/api/timelines', async (req, res) => {
 
 app.post('/api/timelines', async (req, res) => {
   console.log('POST /api/timelines', req.body);
+  
+  // בדיקת תקינות הנתונים
+  const { title, gradeLevel, subject } = req.body;
+  if (!title || !gradeLevel || !subject) {
+    return res.status(400).json({ 
+      error: 'חסרים פרטים נדרשים',
+      details: {
+        title: !title ? 'כותרת חסרה' : null,
+        gradeLevel: !gradeLevel ? 'שכבת גיל חסרה' : null,
+        subject: !subject ? 'מקצוע חסר' : null
+      }
+    });
+  }
+
   try {
-    const { title, gradeLevel, subject, structure } = req.body;
-    
     const timeline = await prisma.timeline.create({
       data: {
         title,
         gradeLevel,
         subject,
-        structure,
+        structure: { nodes: [] },
         userId: 'temp-user-id' // מזהה זמני
       }
     });
@@ -46,7 +58,10 @@ app.post('/api/timelines', async (req, res) => {
     res.json(timeline);
   } catch (error) {
     console.error('Timeline creation error:', error);
-    res.status(500).json({ error: 'שגיאה ביצירת ציר זמן' });
+    res.status(500).json({ 
+      error: 'שגיאה ביצירת ציר זמן',
+      details: error instanceof Error ? error.message : 'שגיאה לא ידועה'
+    });
   }
 });
 
