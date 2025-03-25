@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(cors());
 
 // Routes
-app.get('/api/timelines', async (req, res) => {
+app.get('/api/timelines', async (_req, res) => {
   console.log('GET /api/timelines - Request received');
   try {
     const timelines = await prisma.timeline.findMany({
@@ -21,10 +21,10 @@ app.get('/api/timelines', async (req, res) => {
       }
     });
     console.log('GET /api/timelines - Success:', timelines.length, 'timelines found');
-    res.json(timelines);
+    return res.json(timelines);
   } catch (error) {
     console.error('Error fetching timelines:', error);
-    res.status(500).json({ error: 'שגיאה בטעינת צירי הזמן' });
+    return res.status(500).json({ error: 'שגיאה בטעינת צירי הזמן' });
   }
 });
 
@@ -57,10 +57,10 @@ app.post('/api/timelines', async (req, res) => {
     });
     
     console.log('POST /api/timelines - Success:', timeline);
-    res.json(timeline);
+    return res.json(timeline);
   } catch (error) {
     console.error('Timeline creation error:', error);
-    res.status(500).json({ 
+    return res.status(500).json({ 
       error: 'שגיאה ביצירת ציר זמן',
       details: error instanceof Error ? error.message : 'שגיאה לא ידועה'
     });
@@ -83,10 +83,10 @@ app.get('/api/timelines/:id', async (req, res) => {
       return res.status(404).json({ error: 'ציר הזמן לא נמצא' });
     }
     
-    res.json(timeline);
+    return res.json(timeline);
   } catch (error) {
     console.error('Timeline fetch error:', error);
-    res.status(500).json({ error: 'שגיאה בטעינת ציר הזמן' });
+    return res.status(500).json({ error: 'שגיאה בטעינת ציר הזמן' });
   }
 });
 
@@ -106,10 +106,10 @@ app.post('/api/timelines/:timelineId/items', async (req, res) => {
       }
     });
     
-    res.json(item);
+    return res.json(item);
   } catch (error) {
     console.error('Item creation error:', error);
-    res.status(500).json({ error: 'שגיאה ביצירת פריט' });
+    return res.status(500).json({ error: 'שגיאה ביצירת פריט' });
   }
 });
 

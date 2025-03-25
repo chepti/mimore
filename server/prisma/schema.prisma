@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Timeline {
+  id          String        @id @default(cuid())
+  title       String
+  gradeLevel  String
+  subject     String
+  structure   Json
+  userId      String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  items       TeachingItem[]
+  followers   TimelineFollow[]
+}
+
+model TeachingItem {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  fileUrl     String?
+  tags        String[]
+  status      String    @default("draft")
+  timelineId  String
+  timeline    Timeline  @relation(fields: [timelineId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model TimelineFollow {
+  id          String    @id @default(cuid())
+  timelineId  String
+  followerId  String
+  timeline    Timeline  @relation(fields: [timelineId], references: [id])
+  createdAt   DateTime  @default(now())
+} 
