@@ -10,7 +10,11 @@ import {
   Button,
   VStack,
   useToast,
-  useColorModeValue
+  useColorModeValue,
+  Wrap,
+  WrapItem,
+  Tag,
+  TagLabel,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 
@@ -26,6 +30,30 @@ const CreateTimeline = () => {
     subject: '',
   });
 
+  const grades = [
+    { value: '1', label: 'כיתה א׳' },
+    { value: '2', label: 'כיתה ב׳' },
+    { value: '3', label: 'כיתה ג׳' },
+    { value: '4', label: 'כיתה ד׳' },
+    { value: '5', label: 'כיתה ה׳' },
+    { value: '6', label: 'כיתה ו׳' },
+    { value: '7', label: 'כיתה ז׳' },
+    { value: '8', label: 'כיתה ח׳' },
+    { value: '9', label: 'כיתה ט׳' },
+    { value: '10', label: 'כיתה י׳' },
+    { value: '11', label: 'כיתה י״א' },
+    { value: '12', label: 'כיתה י״ב' },
+  ];
+
+  const subjects = [
+    { value: 'math', label: 'מתמטיקה' },
+    { value: 'science', label: 'מדעים' },
+    { value: 'english', label: 'אנגלית' },
+    { value: 'hebrew', label: 'עברית' },
+    { value: 'history', label: 'היסטוריה' },
+    { value: 'geography', label: 'גאוגרפיה' },
+  ];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -35,7 +63,10 @@ const CreateTimeline = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          structure: { nodes: [] },
+        }),
       });
 
       if (!response.ok) {
@@ -71,6 +102,13 @@ const CreateTimeline = () => {
     }));
   };
 
+  const handleGradeSelect = (grade: string) => {
+    setFormData(prev => ({
+      ...prev,
+      gradeLevel: grade === prev.gradeLevel ? '' : grade
+    }));
+  };
+
   return (
     <Box bg={bgColor} minH="100vh" py={20}>
       <Container maxW="container.md">
@@ -97,16 +135,22 @@ const CreateTimeline = () => {
 
           <FormControl isRequired>
             <FormLabel>שכבת גיל</FormLabel>
-            <Select
-              name="gradeLevel"
-              value={formData.gradeLevel}
-              onChange={handleChange}
-              placeholder="בחר שכבת גיל"
-            >
-              <option value="elementary">יסודי</option>
-              <option value="middle">חטיבת ביניים</option>
-              <option value="high">תיכון</option>
-            </Select>
+            <Wrap spacing={2}>
+              {grades.map((grade) => (
+                <WrapItem key={grade.value}>
+                  <Tag
+                    size="lg"
+                    borderRadius="full"
+                    variant={formData.gradeLevel === grade.value ? 'solid' : 'outline'}
+                    colorScheme={formData.gradeLevel === grade.value ? 'blue' : 'gray'}
+                    cursor="pointer"
+                    onClick={() => handleGradeSelect(grade.value)}
+                  >
+                    <TagLabel>{grade.label}</TagLabel>
+                  </Tag>
+                </WrapItem>
+              ))}
+            </Wrap>
           </FormControl>
 
           <FormControl isRequired>
@@ -117,12 +161,11 @@ const CreateTimeline = () => {
               onChange={handleChange}
               placeholder="בחר מקצוע"
             >
-              <option value="math">מתמטיקה</option>
-              <option value="science">מדעים</option>
-              <option value="english">אנגלית</option>
-              <option value="hebrew">עברית</option>
-              <option value="history">היסטוריה</option>
-              <option value="geography">גאוגרפיה</option>
+              {subjects.map((subject) => (
+                <option key={subject.value} value={subject.value}>
+                  {subject.label}
+                </option>
+              ))}
             </Select>
           </FormControl>
 
@@ -131,6 +174,7 @@ const CreateTimeline = () => {
             colorScheme="blue"
             size="lg"
             width="full"
+            isDisabled={!formData.title || !formData.gradeLevel || !formData.subject}
           >
             צור ציר זמן
           </Button>
