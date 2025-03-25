@@ -12,6 +12,7 @@ app.use(cors());
 
 // Routes
 app.get('/api/timelines', async (req, res) => {
+  console.log('GET /api/timelines');
   try {
     const timelines = await prisma.timeline.findMany({
       include: {
@@ -27,6 +28,7 @@ app.get('/api/timelines', async (req, res) => {
 });
 
 app.post('/api/timelines', async (req, res) => {
+  console.log('POST /api/timelines', req.body);
   try {
     const { title, gradeLevel, subject, structure } = req.body;
     
@@ -40,6 +42,7 @@ app.post('/api/timelines', async (req, res) => {
       }
     });
     
+    console.log('Timeline created:', timeline);
     res.json(timeline);
   } catch (error) {
     console.error('Timeline creation error:', error);
@@ -96,4 +99,5 @@ app.post('/api/timelines/:timelineId/items', async (req, res) => {
 // Start server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
+  console.log(`API available at http://localhost:${port}/api`);
 }); 

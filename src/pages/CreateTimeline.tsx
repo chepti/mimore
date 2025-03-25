@@ -58,6 +58,7 @@ const CreateTimeline = () => {
     e.preventDefault();
     
     try {
+      console.log('Sending request to create timeline:', formData);
       const response = await fetch('/api/timelines', {
         method: 'POST',
         headers: {
@@ -70,10 +71,12 @@ const CreateTimeline = () => {
       });
 
       if (!response.ok) {
-        throw new Error('שגיאה ביצירת ציר הזמן');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'שגיאה ביצירת ציר הזמן');
       }
 
       const data = await response.json();
+      console.log('Timeline created successfully:', data);
       
       toast({
         title: 'ציר הזמן נוצר בהצלחה',
@@ -84,11 +87,12 @@ const CreateTimeline = () => {
 
       navigate(`/timeline/${data.id}`);
     } catch (error) {
+      console.error('Error creating timeline:', error);
       toast({
         title: 'שגיאה',
         description: error instanceof Error ? error.message : 'שגיאה לא ידועה',
         status: 'error',
-        duration: 3000,
+        duration: 5000,
         isClosable: true,
       });
     }
